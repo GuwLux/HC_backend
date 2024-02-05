@@ -12,8 +12,6 @@ mongoose.connect('mongodb+srv://scsc13579113:Qaz13579113@hcweb.mwb3cmu.mongodb.n
   useUnifiedTopology: true,
 });
 
-const productSchema = require('./models/Product'); // 引入資料庫模型
-
 // Middleware to parse JSON requests
 app.use(express.json());
 
@@ -50,7 +48,7 @@ app.get('/api/products', async (req, res) => {
 app.get('/api/products/:id', async (req, res) => {
   try {
     const productId = req.params.id;
-    const product = await Product.findById(productId);
+    const product = await productSchema.findById(productId);
 
     if (!product) {
       return res.status(404).json({ error: 'Product not found' });
@@ -62,6 +60,8 @@ app.get('/api/products/:id', async (req, res) => {
       name: product.name,
       price: product.price,
       imageUrl: `data:image/jpeg;base64,${product.image}`, // 使用商品圖片的 base64 字串
+      type: product.type,
+      description: product.description,
     };
 
     res.json(productWithImageUrl);
@@ -71,11 +71,10 @@ app.get('/api/products/:id', async (req, res) => {
   }
 });
 
-
 app.delete('/api/products/:id', async (req, res) => {
   try {
     const productId = req.params.id;
-    await Product.findByIdAndDelete(productId);
+    await productSchema.findByIdAndDelete(productId);
     res.json({ message: 'Product deleted successfully' });
   } catch (error) {
     console.error(error);
