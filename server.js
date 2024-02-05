@@ -12,22 +12,7 @@ mongoose.connect('mongodb+srv://scsc13579113:Qaz13579113@hcweb.mwb3cmu.mongodb.n
   useUnifiedTopology: true,
 });
 
-const productSchema = new mongoose.Schema({
-  name: {
-    type: String,
-    required: true,
-  },
-  price: {
-    type: Number,
-    required: true,
-  },
-  image: {
-    type: String,
-    required: true,
-  },
-});
-
-const Product = mongoose.model('Product', productSchema);
+const productSchema = require('./models/product'); // 引入資料庫模型
 
 // Middleware to parse JSON requests
 app.use(express.json());
@@ -39,10 +24,10 @@ const upload = multer({ storage: storage });
 // Define routes
 app.post('/api/products', upload.single('imageFile'), async (req, res) => {
   try {
-    const { name, price } = req.body;
+    const { name, price, type, description } = req.body;
     const imageBuffer = req.file.buffer.toString('base64');
 
-    const newProduct = new Product({ name, price, image: imageBuffer });
+    const newProduct = new productSchema({ name, price, image: imageBuffer, type, description });
     const savedProduct = await newProduct.save();
 
     res.json(savedProduct);
@@ -54,7 +39,7 @@ app.post('/api/products', upload.single('imageFile'), async (req, res) => {
 
 app.get('/api/products', async (req, res) => {
   try {
-    const products = await Product.find();
+    const products = await productSchema.find();
     res.json(products);
   } catch (error) {
     console.error(error);
