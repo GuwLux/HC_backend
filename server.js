@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const multer = require('multer');
 const cors = require('cors');
 const app = express();
-const PORT = process.env.PORT || 3001;
+const PORT = process.env.PORT || 8080;
 
 app.use(cors());
 
