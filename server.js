@@ -12,7 +12,7 @@ mongoose.connect('mongodb+srv://scsc13579113:Qaz13579113@hcweb.mwb3cmu.mongodb.n
   useUnifiedTopology: true,
 });
 
-const productSchema = require('./models/product'); // 引入資料庫模型
+const productSchema = require('./models/Product'); // 引入資料庫模型
 
 // Middleware to parse JSON requests
 app.use(express.json());
