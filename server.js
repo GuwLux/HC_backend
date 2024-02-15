@@ -90,17 +90,21 @@ app.get('/api/products/:id', async (req, res) => {
       return res.status(404).json({ error: 'Product not found' });
     }
 
-    // 確保回傳的商品資訊包含 imageUrl
-    const productWithImageUrl = {
+    // 確保回傳的商品資訊包含所有圖片的 imageUrl
+    const productWithImages = {
       _id: product._id,
       name: product.name,
       price: product.price,
       type: product.type,
       description: product.description,
-      imageUrl: `data:image/jpeg;base64,${product.image}`, // 使用商品圖片的 base64 字串
+      // 如果圖片欄位存在，則將其轉換為 base64 字串
+      image1: product.image1 ? `data:image/jpeg;base64,${product.image1}` : null,
+      image2: product.image2 ? `data:image/jpeg;base64,${product.image2}` : null,
+      image3: product.image3 ? `data:image/jpeg;base64,${product.image3}` : null,
+      image4: product.image4 ? `data:image/jpeg;base64,${product.image4}` : null,
     };
 
-    res.json(productWithImageUrl);
+    res.json(productWithImages);
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'Internal Server Error' });
