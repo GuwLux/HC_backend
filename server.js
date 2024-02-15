@@ -21,8 +21,8 @@ const productSchema = new mongoose.Schema({
     type: Number,
     required: true,
   },
-  image: {
-    type: String,
+  images: {
+    type: [String],
     required: true,
   },
   type: {
@@ -37,27 +37,35 @@ const productSchema = new mongoose.Schema({
 
 const Product = mongoose.model('Product', productSchema);
 
-// Middleware to parse JSON requests
+const storage = multer.memoryStorage();
+const upload = multer({ storage: storage }).array('imageFiles', 4); // 最多四張圖片
+
 app.use(express.json());
 
-// Configure multer to handle file uploads
-const storage = multer.memoryStorage();
-const upload = multer({ storage: storage });
+app.post('/api/products', (req, res) => {
+  upload(req, res, async function (err) {
+    if (err instanceof multer.MulterError) {
+      // A Multer error occurred when uploading
+      return res.status(400).json({ error: 'File upload error' });
+    } else if (err) {
+      // An unknown error occurred when uploading
+      console.error(err);
+      return res.status(500).json({ error: 'Internal Server Error' });
+    }
 
-// Define routes
-app.post('/api/products', upload.single('imageFile'), async (req, res) => {
-  try {
-    const { name, price, type, description } = req.body;
-    const imageBuffer = req.file.buffer.toString('base64');
+    try {
+      const { name, price, type, description } = req.body;
+      const images = req.files.map((file) => file.buffer.toString('base64'));
 
-    const newProduct = new Product({ name, price, image: imageBuffer, type, description });
-    const savedProduct = await newProduct.save();
+      const newProduct = new Product({ name, price, images, type, description });
+      const savedProduct = await newProduct.save();
 
-    res.json(savedProduct);
-  } catch (error) {
-    console.error(error);
-    res.status(500).send('Internal Server Error');
-  }
+      res.json(savedProduct);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: 'Internal Server Error' });
+    }
+  });
 });
 
 app.get('/api/products', async (req, res) => {
