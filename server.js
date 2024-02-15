@@ -21,8 +21,20 @@ const productSchema = new mongoose.Schema({
     type: Number,
     required: true,
   },
-  images: {
-    type: [String],
+  image1: {
+    type: String,
+    required: true,
+  },
+  image2: {
+    type: String,
+    required: true,
+  },
+  image3: {
+    type: String,
+    required: true,
+  },
+  image4: {
+    type: String,
     required: true,
   },
   type: {
@@ -38,7 +50,12 @@ const productSchema = new mongoose.Schema({
 const Product = mongoose.model('Product', productSchema);
 
 const storage = multer.memoryStorage();
-const upload = multer({ storage: storage }).array('imageFiles', 4); // 最多四張圖片
+const upload = multer({ storage: storage }).fields([
+  { name: 'image1', maxCount: 1 },
+  { name: 'image2', maxCount: 1 },
+  { name: 'image3', maxCount: 1 },
+  { name: 'image4', maxCount: 1 },
+]);
 
 app.use(express.json());
 
@@ -55,7 +72,12 @@ app.post('/api/products', (req, res) => {
 
     try {
       const { name, price, type, description } = req.body;
-      const images = req.files.map((file) => file.buffer.toString('base64'));
+      const images = [
+        req.files['image1'][0].buffer.toString('base64'),
+        req.files['image2'][0].buffer.toString('base64'),
+        req.files['image3'][0].buffer.toString('base64'),
+        req.files['image4'][0].buffer.toString('base64'),
+      ];
 
       const newProduct = new Product({ name, price, images, type, description });
       const savedProduct = await newProduct.save();
