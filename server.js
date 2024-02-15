@@ -25,18 +25,9 @@ const productSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  image2: {
-    type: String,
-    required: false,
-  },
-  image3: {
-    type: String,
-    required: false,
-  },
-  image4: {
-    type: String,
-    required: false,
-  },
+  image2: String, // 將 image2~4 欄位設為非必填
+  image3: String,
+  image4: String,
   type: {
     type: String,
     required: true,
@@ -66,9 +57,9 @@ app.post('/api/products', upload.fields([
   try {
     const { name, price, type, description } = req.body;
     const imageBuffer1 = req.files['imageFile1'][0].buffer.toString('base64');
-    const imageBuffer2 = req.files['imageFile2'][0].buffer.toString('base64');
-    const imageBuffer3 = req.files['imageFile3'][0].buffer.toString('base64');
-    const imageBuffer4 = req.files['imageFile4'][0].buffer.toString('base64');
+    const imageBuffer2 = req.files['imageFile2'] ? req.files['imageFile2'][0].buffer.toString('base64') : null;
+    const imageBuffer3 = req.files['imageFile3'] ? req.files['imageFile3'][0].buffer.toString('base64') : null;
+    const imageBuffer4 = req.files['imageFile4'] ? req.files['imageFile4'][0].buffer.toString('base64') : null;
 
     const newProduct = new Product({ name, price, image1: imageBuffer1, image2: imageBuffer2, image3: imageBuffer3, image4: imageBuffer4, type, description });
     const savedProduct = await newProduct.save();
