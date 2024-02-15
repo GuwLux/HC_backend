@@ -21,7 +21,19 @@ const productSchema = new mongoose.Schema({
     type: Number,
     required: true,
   },
-  image: {
+  image1: {
+    type: String,
+    required: true,
+  },
+  image2: {
+    type: String,
+    required: true,
+  },
+  image3: {
+    type: String,
+    required: true,
+  },
+  image4: {
     type: String,
     required: true,
   },
@@ -45,12 +57,20 @@ const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
 
 // Define routes
-app.post('/api/products', upload.single('imageFile'), async (req, res) => {
+app.post('/api/products', upload.fields([
+  { name: 'imageFile1', maxCount: 1 },
+  { name: 'imageFile2', maxCount: 1 },
+  { name: 'imageFile3', maxCount: 1 },
+  { name: 'imageFile4', maxCount: 1 },
+]), async (req, res) => {
   try {
     const { name, price, type, description } = req.body;
-    const imageBuffer = req.file.buffer.toString('base64');
+    const imageBuffer1 = req.files['imageFile1'][0].buffer.toString('base64');
+    const imageBuffer2 = req.files['imageFile2'][0].buffer.toString('base64');
+    const imageBuffer3 = req.files['imageFile3'][0].buffer.toString('base64');
+    const imageBuffer4 = req.files['imageFile4'][0].buffer.toString('base64');
 
-    const newProduct = new Product({ name, price, image: imageBuffer, type, description });
+    const newProduct = new Product({ name, price, image1: imageBuffer1, image2: imageBuffer2, image3: imageBuffer3, image4: imageBuffer4, type, description });
     const savedProduct = await newProduct.save();
 
     res.json(savedProduct);
